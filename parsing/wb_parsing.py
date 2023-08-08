@@ -44,7 +44,7 @@ def get_pages_count(html):
 
 
 driver = webdriver.Chrome(
-    executable_path=r"E:\DIR_python_projects\dnevnikRUselenium\chromedriver.exe",
+    executable_path=r"C:\Deep Learning\ml_analytics\parsing\chromedriver_win32\chromedriver.exe",
     options=options)
 
 def get_links_cards(base_link, count_scroll=10):
@@ -60,7 +60,8 @@ def get_links_cards(base_link, count_scroll=10):
 
 
 # main_link = "https://www.wildberries.ru/catalog/dom/dachniy-sezon/gorshki-opory-i-vse-dlya-rassady/opory-postavki-i-krepleniya-dlya-rasteniy"
-base_search_names = ["мыло", "зубная паста", "зубная щетка", "бритва", "посуда", "косметика", "лампочки", "футболка"]
+base_search_names = ["мыло", "зубная паста", "зубная щетка", "бритва", "посуда", "косметика", "лампочки", "футболка", 'джинсы',
+                     'кроссовки', 'кольцо']
 search_links = [(i, f"https://www.wildberries.ru/catalog/0/search.aspx?search={i}") for i in base_search_names]
 
 home_link = "https://www.wildberries.ru"
