@@ -69,14 +69,14 @@ home_link = "https://www.wildberries.ru"
 
 full_links = []
 for search_category, search_link in search_links:
-    for i in range(5):
+    for i in range(15):
         full_links.append((search_category, search_link + f"&page={i + 2}"))
 
 print("full links: ", len(full_links))
 
 links_cards = []
 for search_category, main_link in tqdm(full_links):
-    link_results = get_links_cards(main_link, count_scroll=5)
+    link_results = get_links_cards(main_link, count_scroll=15)
     extend_list = list(zip(link_results, [search_category] * len(link_results)))
     links_cards.extend(extend_list)
 
