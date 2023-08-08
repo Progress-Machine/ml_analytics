@@ -70,7 +70,7 @@ home_link = "https://www.wildberries.ru"
 
 full_links = []
 for search_category, search_link in search_links:
-    for i in range(15):
+    for i in range(30):
         full_links.append((search_category, search_link + f"&page={i + 2}"))
 
 print("full links: ", len(full_links))
