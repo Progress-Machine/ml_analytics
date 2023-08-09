@@ -15,5 +15,5 @@ with open(args.json_path, encoding='utf-8') as f:
     text = json.load(f)[0]['description']
 
 inputs = pd.DataFrame({'descriptions':[text]})
-predict = abs(round(model.predict(inputs)[0], 2))
+predict = abs(round(model.predict(inputs)[0], 6))
 print(predict)
