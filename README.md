@@ -1,5 +1,9 @@
 # ml_analytics
+## Data: https://drive.google.com/drive/folders/1P_aWnUw3GxRXWuzZbhTCdT5gCBPy_b7l?usp=sharing
 ## image_regression.py
-### Data: https://drive.google.com/drive/folders/1P_aWnUw3GxRXWuzZbhTCdT5gCBPy_b7l?usp=sharing
 ### инференс выдает значение в диапазоне 0-1, которое характеризует успешность продающей картинки в данном сегменте.
+### 1 - максимальный успех
+
+## text_regression.py
+### инференс выдает значение в диапазоне 0-1, которое характеризует успешность продающего текста (описания товара) в данном сегменте.
 ### 1 - максимальный успех
