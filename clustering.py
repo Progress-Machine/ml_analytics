@@ -19,14 +19,14 @@ from sklearn.preprocessing import StandardScaler, Normalizer
 morph = pymorphy2.MorphAnalyzer(lang='ru')
 russian_stopwords = stopwords.words("russian")
 
-tfidf = pickle.load(open("tdidf.pickle", "rb"))
-lda = pickle.load(open("lda.pickle", "rb"))
-tree = pickle.load(open("kd_tree.pickle", "rb"))
-normalizer = pickle.load(open("normalizer.pickle", "rb"))
-umap_clustering = pickle.load(open("umap_clustering.pickle", "rb"))
+tfidf = pickle.load(open("models/tdidf.pickle", "rb"))
+lda = pickle.load(open("models/lda.pickle", "rb"))
+tree = pickle.load(open("models/kd_tree.pickle", "rb"))
+normalizer = pickle.load(open("models/normalizer.pickle", "rb"))
+umap_clustering = pickle.load(open("models/umap_clustering.pickle", "rb"))
 
-clusters_domain = pd.read_csv("clusters_domain.csv")
-origin_df = pd.read_csv("original_data.csv")
+clusters_domain = pd.read_csv("data/clusters_domain.csv")
+origin_df = pd.read_csv("data/original_data.csv")
 
 
 class TopicModeler(object):
