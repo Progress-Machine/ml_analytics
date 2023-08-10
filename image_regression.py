@@ -9,14 +9,18 @@ parser.add_argument('--image_path', type=str, default='C:/Deep Learning/ml_analy
 parser.add_argument('--device', type=str, default='cuda')
 args = parser.parse_args()
 
-device = args.device
-model = torch.load(args.model_path)
-model.to(device).eval()
-extractor = torch.load(args.extractor_path)
+def main():
+    device = args.device
+    model = torch.load(args.model_path)
+    model.to(device).eval()
+    extractor = torch.load(args.extractor_path)
 
-image = Image.open(args.image_path)
-inputs = extractor(images=image, return_tensors="pt").pixel_values.to(device)
-with torch.no_grad():
-    pred = model(inputs).logits.item()
-pred = round(pred, 2)
-print(pred)    # max 200000
+    image = Image.open(args.image_path)
+    inputs = extractor(images=image, return_tensors="pt").pixel_values.to(device)
+    with torch.no_grad():
+        pred = model(inputs).logits.item()
+    pred = round(pred, 2)
+    print(pred)    # max 200000
+
+if __name__ == '__main__':
+    main()
