@@ -1,6 +1,7 @@
 # Аналитика товаров на маркетплейсе
 ____
-### Data: https://drive.google.com/drive/folders/1P_aWnUw3GxRXWuzZbhTCdT5gCBPy_b7l?usp=sharing
+### Data: https://drive.google.com/drive/folders/1P_aWnUw3GxRXWuzZbhTCdT5gCBPy_b7l?usp=sharing  
+https://drive.google.com/file/d/1ytobkQs0sEdfBJtTf9gl24GCt55-3TiN/view?usp=sharing - csv со всеми 16к товарами  
 ____
 
 ### image_regression.py
