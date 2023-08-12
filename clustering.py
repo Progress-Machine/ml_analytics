@@ -19,15 +19,18 @@ from sklearn.preprocessing import StandardScaler, Normalizer
 morph = pymorphy2.MorphAnalyzer(lang='ru')
 russian_stopwords = stopwords.words("russian")
 
-tfidf = pickle.load(open("tdidf.pickle", "rb"))
-lda = pickle.load(open("lda.pickle", "rb"))
-tree = pickle.load(open("kd_tree.pickle", "rb"))
-normalizer = pickle.load(open("normalizer.pickle", "rb"))
-umap_clustering = pickle.load(open("umap_clustering.pickle", "rb"))
+tfidf = pickle.load(open("models/tdidf.pickle", "rb"))
+lda = pickle.load(open("models/lda.pickle", "rb"))
+tree = pickle.load(open("models/kd_tree.pickle", "rb"))
+normalizer = pickle.load(open("models/normalizer.pickle", "rb"))
+umap_clustering = pickle.load(open("models/umap_clustering.pickle", "rb"))
 
 clusters_domain = pd.read_csv("clusters_domain.csv")
 origin_df = pd.read_csv("original_data.csv")
 
+column_names_to_normalize = ["price", "old_price", "celler_rating", "celler_mean_delivery_time", "celler_percent_bad_products",
+"sale_percent", "percent_order_of_all_seller", "not_info_old_price",
+"not_info_order_count", "celler_working_time_norm"]
 
 class TopicModeler(object):
 	""" для кластеризации текстов с помощью LDA """
@@ -75,7 +78,7 @@ def string_to_date(text):
 
 
 
-def preprocess_data(data):
+def preprocess_data(data, normalize_data=True):
 	"""
 	Функция для предобработки карточки с информацией о товаре для дальнейшей кластеризации и поиска ближайшей продукции.
 	Принимает на вход:
@@ -86,9 +89,17 @@ def preprocess_data(data):
 	df = pd.DataFrame(data).iloc[0]
 	df["description"] = re.sub('[0-9:,.!?]', '', df["description"])
 	df["description"] = " ".join([morph.parse(word)[0].normal_form for word in df["description"].split() if word not in russian_stopwords])
-	
-	df["price"] = float(df["price"])
-	df["old_price"] = float(df["old_price"])
+
+	if df["price"] is None:
+		df["price"] = 0.1
+	else:
+		df["price"] = float(df["price"])
+
+	if df["old_price"] is None:
+		df["old_price"] = 0.1
+	else:
+		df["old_price"] = float(df["old_price"])
+
 	df["celler_mean_delivery_time"] = float(df["celler_mean_delivery_time"][:df["celler_mean_delivery_time"].index("%")]) if df["celler_mean_delivery_time"] is not None else 99.3
 	df["celler_percent_bad_products"] = float(df["celler_percent_bad_products"][:df["celler_percent_bad_products"].index("%")]) if df["celler_percent_bad_products"] is not None else 99.3
 	df["sale_percent"] = (df["price"] / df["old_price"]) if df["price"] is not None else 0
@@ -112,12 +123,19 @@ def preprocess_data(data):
 	urls = df["url"]
 	df.drop(["url", "description"], inplace=True)
 	
-	columns = ['price', 'old_price', 'order_count', 'celler_rating', 'celler_mean_delivery_time', 
-			   'celler_percent_bad_products', 'sale_percent', 'percent_order_of_all_seller', 
+	columns = ['price', 'old_price', 'order_count', 'celler_rating', 'celler_mean_delivery_time',
+			   'celler_percent_bad_products', 'sale_percent', 'percent_order_of_all_seller',
 			   'not_info_old_price','not_info_order_count', 'celler_working_time_norm']
-	df = pd.DataFrame(data=normalizer.transform(df.values.reshape((1, -1))), columns=columns)
-	df = df.join(pd.DataFrame(data=text_embeddings*10, columns=[f"embed_{i}" for i in range(text_embeddings.shape[1])]))
-	return df
+	text_embed_df = pd.DataFrame(data=text_embeddings*10, columns=[f"embed_{i}" for i in range(text_embeddings.shape[1])])
+
+	if normalize_data:
+		df = pd.DataFrame(data=normalizer.transform(df.values.reshape((1, -1))), columns=columns)
+		df = df.join(pd.DataFrame(data=text_embeddings * 10, columns=[f"embed_{i}" for i in range(text_embeddings.shape[1])]))
+		return df
+	else:
+		data = df	# .values.reshape((1, -1))
+		return text_embed_df.join(data.to_frame().transpose())
+
 
 
 def k_nearest_items(df, k=100, return_idxes=False):
@@ -129,14 +147,14 @@ def k_nearest_items(df, k=100, return_idxes=False):
 		-return_idxes, bool возвращать ли индексы самых похожих товаров
 	Возвращает pd.DataFrame с k самыми похожими товарами
 	"""
-    nearest = tree.query(df.values.reshape(1, -1), k=k)[1][0]
-    if return_idxes:
-        return nearest
-    
-    nearest_samples = origin_df.iloc[nearest]
-    return nearest_samples
+	nearest = tree.query(df.values.reshape(1, -1), k=k)[1][0]
+	if return_idxes:
+		return nearest
+
+	nearest_samples = origin_df.iloc[nearest]
+	return nearest_samples
 
 
 def position_in_domain(df):
-    embedding = umap_clustering.transform(df.values.reshape(1, -1))
-    return embedding[0]
+	embedding = umap_clustering.transform(df.values.reshape(1, -1))
+	return embedding[0]
