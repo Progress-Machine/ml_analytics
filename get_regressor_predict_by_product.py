@@ -18,7 +18,7 @@ model.to(device)
 
 
 pca_vit_transformer = pickle.load(open("models/pca_vit_embeddings.pkl", 'rb'))
-regressor = pickle.load(open("models/main_regressor.pkl"))
+regressor = pickle.load(open("models/main_regressor.pkl" ,"rb"))
 
 
 def get_predict(json_object, image):
@@ -26,7 +26,7 @@ def get_predict(json_object, image):
     with torch.no_grad():
         outputs = model(**inputs)
     img_embedding = np.array(outputs.pooler_output[0, ...].cpu().detach())
-    img_embedding = pca_vit_transformer.transform(img_embedding)
+    img_embedding = pca_vit_transformer.transform(img_embedding.reshape(1, -1))
 
     preprocessed_data = preprocess_data(json_object, normalize_data=False)
     df = preprocessed_data.join(pd.DataFrame(img_embedding, columns=[f"{i + 1}_vit_feature" for i in range(img_embedding.shape[1])]))

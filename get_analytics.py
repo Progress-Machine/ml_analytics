@@ -6,31 +6,31 @@ stop_words = stopwords.words('russian')
 
 from clustering import k_nearest_items, clusters_domain, preprocess_data
 
-def get_analytics(out_product, create_worldcloud=True):
+def get_analytics(our_product, create_worldcloud=True):
     """Делает аналитику - возвращает словари с результатами, сохраняет облако слов в tmp_files/world-cloud.png
     если флаг create_worldcloud=True
     out_product: dict с информацией о карточке товара, полученный после парсинга
     """
-    processed_data = preprocess_data(out_product)
+    processed_data = preprocess_data(our_product)
     nearest_dataframe = k_nearest_items(processed_data)
 
     if create_worldcloud: _create_worldcloud(nearest_dataframe)
 
     results = {
-        "revenue_analytic": _get_revenue_analytic(nearest_dataframe, out_product),
-        "price_analytic": _get_price_analytic(nearest_dataframe, out_product),
-        "rating_analytic": _get_rating_analytic(nearest_dataframe, out_product)
+        "revenue_analytic": _get_revenue_analytic(nearest_dataframe, our_product),
+        "price_analytic": _get_price_analytic(nearest_dataframe, our_product),
+        "rating_analytic": _get_rating_analytic(nearest_dataframe, our_product)
     }
 
     return results
 
 
 
-def _get_revenue_analytic(nearest_dataframe, out_product):
+def _get_revenue_analytic(nearest_dataframe, our_product):
     """производит аналитику по выручке - локальная функция, только для использования в файле"""
     nearest_dataframe["revenue"] = nearest_dataframe.order_count * nearest_dataframe.price
 
-    our_revenue = out_product["price"] * out_product["order_count"] if out_product["order_count"] is not None else 0
+    our_revenue = our_product["price"] * our_product["order_count"] if our_product["order_count"] is not None else 0
     # revenue_median = nearest_dataframe.revenue.median()
 
     percentile = sum(our_revenue < nearest_dataframe.revenue) / len(nearest_dataframe.revenue) * 100
@@ -49,12 +49,12 @@ def _get_revenue_analytic(nearest_dataframe, out_product):
     return dct_revenue
 
 
-def _get_price_analytic(nearest_dataframe, out_product):
+def _get_price_analytic(nearest_dataframe, our_product):
     """производит аналитику по цене товара - локальная функция, только для использования в файле"""
 
     best_price = nearest_dataframe.sort_values(by="revenue", ascending=False).iloc[:25].price.mean()
     mean_price = nearest_dataframe.price.mean()
-    our_price = float(out_product["price"])
+    our_price = float(our_product["price"])
 
     comment = f"Выша цена: {our_price}. Средняя цена в среди похожих товаров: {mean_price}; " \
               f"Цена у товаров с наибольшей выручкой: {best_price}"
@@ -66,15 +66,15 @@ def _get_price_analytic(nearest_dataframe, out_product):
         comment2 += "Возможно, Вам стоит понизить цену или усилить маркетинговую часть, чтобы донести клиентам ценность продукта. Мы поможем Вам это сделать с помощью AI технологий"
 
     dct_price = {"comment": comment, "personal_comment": comment2,
-                 "nearest_prices": list(nearest_dataframe.price), "our_price": out_product["price"]}
+                 "nearest_prices": list(nearest_dataframe.price), "our_price": our_product["price"]}
 
     return dct_price
 
 
-def _get_rating_analytic(nearest_dataframe, out_product):
+def _get_rating_analytic(nearest_dataframe, our_product):
     """производит аналитику по рейтингу товара - локальная функция, только для использования в файле"""
 
-    our_rating = out_product["celler_rating"]
+    our_rating = our_product["celler_rating"]
     percentile = sum(our_rating < nearest_dataframe.celler_rating) / len(nearest_dataframe.celler_rating) * 100
 
     comment = ""
