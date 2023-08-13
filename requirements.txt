@@ -1,0 +1,12 @@
+pandas
+dateparser
+numpy
+matplotlib
+sklearn==1.3.0
+pymorphy2==0.9.1
+umap
+tqdm
+nltk==3.6.2
+wordcloud
+transformers
+torch
