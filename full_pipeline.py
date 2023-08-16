@@ -6,6 +6,11 @@ from wb_parser import parse_link
 from get_regressor_predict_by_product import get_predict
 from get_analytics import get_analytics
 
+def get_float_or_none(num):
+    if num is None:
+        return 0
+    return float(num)
+
 def get_predict_by_link(link):
     """получает ссылку - парсит данные, делает аналитику и получает предикт выручки"""
     dct_product_data = parse_link(link)
@@ -18,8 +23,8 @@ def get_predict_by_link(link):
 
     revenue_predict = get_predict(dct_product_data, img)      # предикт выручки
 
-    dct_product_data["price"] = float(dct_product_data["price"])
-    dct_product_data["order_count"] = float(dct_product_data["order_count"])
+    dct_product_data["price"] = get_float_or_none(dct_product_data["price"])
+    dct_product_data["order_count"] = get_float_or_none(dct_product_data["order_count"])
     analys_data = get_analytics(dct_product_data)
 
     return dct_product_data, revenue_predict, analys_data
